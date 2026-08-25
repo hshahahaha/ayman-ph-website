@@ -276,6 +276,7 @@ const ProductCard = ({ product }) => {
   const { addToCart, wishlist, toggleWishlist } = useCart();
   const isWish = wishlist.includes(product.id);
   const hasDiscount = product.sale_price && product.sale_price > product.price;
+  const isFreeNoWhatsApp = product.no_whatsapp === true;
 
   return (
     <div className="group relative bg-white rounded-2xl overflow-hidden border border-pink-50 hover:border-pink-200 hover:shadow-xl transition-all duration-300" data-testid={`product-card-${product.id}`}>
@@ -304,11 +305,11 @@ const ProductCard = ({ product }) => {
           </h3>
         </Link>
         <div className="flex items-baseline gap-2 mb-2">
-          <span className="text-pink-600 font-extrabold text-base">{formatPrice(product.price)}</span>
+          <span className="text-pink-600 font-extrabold text-base">{isFreeNoWhatsApp ? "مجاني" : formatPrice(product.price)}</span>
           {hasDiscount && <span className="text-gray-400 line-through text-xs">{formatPrice(product.sale_price)}</span>}
         </div>
         {/* Social proof */}
-        {(() => {
+        {!isFreeNoWhatsApp && (() => {
           const sp = getSocialProof(product.id);
           return (
             <div className="flex items-center gap-1 text-[11px] text-red-500 font-semibold mb-3 animate-pulse">
@@ -317,13 +318,23 @@ const ProductCard = ({ product }) => {
             </div>
           );
         })()}
-        <button
-          onClick={() => addToCart(product)}
-          className="w-full bg-gray-900 hover:bg-pink-600 text-white py-2.5 rounded-full text-sm font-semibold transition-colors flex items-center justify-center gap-1.5"
-          data-testid={`add-to-cart-${product.id}`}
-        >
-          <ShoppingBag size={15} /> أضف إلى السلة
-        </button>
+        {isFreeNoWhatsApp ? (
+          <Link
+            to={`/product/${product.id}`}
+            className="w-full bg-gray-900 hover:bg-pink-600 text-white py-2.5 rounded-full text-sm font-semibold transition-colors flex items-center justify-center gap-1.5"
+            data-testid={`free-product-${product.id}`}
+          >
+            <Sparkles size={15} /> عرض الوصف المجاني
+          </Link>
+        ) : (
+          <button
+            onClick={() => addToCart(product)}
+            className="w-full bg-gray-900 hover:bg-pink-600 text-white py-2.5 rounded-full text-sm font-semibold transition-colors flex items-center justify-center gap-1.5"
+            data-testid={`add-to-cart-${product.id}`}
+          >
+            <ShoppingBag size={15} /> أضف إلى السلة
+          </button>
+        )}
       </div>
     </div>
   );
@@ -578,6 +589,7 @@ const ProductDetail = () => {
   const [product, setProduct] = useState(null);
   const [related, setRelated] = useState([]);
   const [qty, setQty] = useState(1);
+  const [copied, setCopied] = useState(false);
   const { addToCart, wishlist, toggleWishlist } = useCart();
   const navigate = useNavigate();
 
@@ -596,6 +608,16 @@ const ProductDetail = () => {
 
   const hasDiscount = product.sale_price && product.sale_price > product.price;
   const isWish = wishlist.includes(product.id);
+  const isFreeNoWhatsApp = product.no_whatsapp === true;
+  const copyDescription = async () => {
+    try {
+      await navigator.clipboard.writeText(product.description || "");
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2200);
+    } catch {
+      setCopied(true);
+    }
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -609,11 +631,11 @@ const ProductDetail = () => {
           {product.brand && <p className="text-pink-600 font-semibold mb-4">العلامة التجارية: {product.brand}</p>}
 
           <div className="flex items-baseline gap-3 mb-3">
-            <span className="text-3xl font-extrabold text-pink-600">{formatPrice(product.price)}</span>
+            <span className="text-3xl font-extrabold text-pink-600">{isFreeNoWhatsApp ? "مجاني" : formatPrice(product.price)}</span>
             {hasDiscount && <span className="text-gray-400 line-through text-lg">{formatPrice(product.sale_price)}</span>}
           </div>
           {/* Social proof banner */}
-          {(() => {
+          {!isFreeNoWhatsApp && (() => {
             const sp = getSocialProof(product.id);
             return (
               <div className="inline-flex items-center gap-2 bg-red-50 text-red-600 text-sm font-bold px-3 py-2 rounded-full mb-6 animate-pulse w-fit">
@@ -623,30 +645,45 @@ const ProductDetail = () => {
             );
           })()}
 
-          {product.description && <p className="text-gray-600 leading-relaxed mb-6">{product.description}</p>}
+          {product.description && <p className="text-gray-600 leading-relaxed mb-6 whitespace-pre-line">{product.description}</p>}
 
-          <div className="flex items-center gap-3 mb-6">
-            <span className="font-semibold">الكمية:</span>
-            <div className="flex items-center border-2 border-pink-200 rounded-full">
-              <button onClick={() => setQty(Math.max(1, qty - 1))} className="px-3 py-2 hover:bg-pink-50 rounded-r-full" data-testid="detail-qty-minus"><Minus size={16} /></button>
-              <span className="px-5 font-bold">{qty}</span>
-              <button onClick={() => setQty(qty + 1)} className="px-3 py-2 hover:bg-pink-50 rounded-l-full" data-testid="detail-qty-plus"><Plus size={16} /></button>
+          {isFreeNoWhatsApp ? (
+            <div className="mb-6">
+              <button onClick={copyDescription} className="w-full bg-[#e91e63] hover:bg-pink-700 text-white py-4 rounded-full font-bold flex items-center justify-center gap-2 transition" data-testid="copy-free-description">
+                <Sparkles size={20} /> {copied ? "تم نسخ الوصف" : "نسخ وصف التصميم مجاناً"}
+              </button>
+              <p className="text-center text-xs text-gray-500 mt-3">هذا المنتج مجاني ولا يحوّلك إلى واتساب.</p>
             </div>
-          </div>
+          ) : (
+            <>
+              <div className="flex items-center gap-3 mb-6">
+                <span className="font-semibold">الكمية:</span>
+                <div className="flex items-center border-2 border-pink-200 rounded-full">
+                  <button onClick={() => setQty(Math.max(1, qty - 1))} className="px-3 py-2 hover:bg-pink-50 rounded-r-full" data-testid="detail-qty-minus"><Minus size={16} /></button>
+                  <span className="px-5 font-bold">{qty}</span>
+                  <button onClick={() => setQty(qty + 1)} className="px-3 py-2 hover:bg-pink-50 rounded-l-full" data-testid="detail-qty-plus"><Plus size={16} /></button>
+                </div>
+              </div>
 
-          <div className="flex gap-3 mb-6">
-            <button onClick={() => addToCart(product, qty)} className="flex-1 bg-[#e91e63] hover:bg-pink-700 text-white py-4 rounded-full font-bold flex items-center justify-center gap-2 transition" data-testid="detail-add-cart">
-              <ShoppingBag size={20} /> أضيفي إلى السلة
-            </button>
-            <button onClick={() => toggleWishlist(product.id)} className={`w-14 h-14 rounded-full flex items-center justify-center transition ${isWish ? "bg-pink-600 text-white" : "border-2 border-pink-200 text-pink-600 hover:bg-pink-50"}`} data-testid="detail-wishlist">
-              <Heart size={20} fill={isWish ? "currentColor" : "none"} />
-            </button>
-          </div>
+              <div className="flex gap-3 mb-6">
+                <button onClick={() => addToCart(product, qty)} className="flex-1 bg-[#e91e63] hover:bg-pink-700 text-white py-4 rounded-full font-bold flex items-center justify-center gap-2 transition" data-testid="detail-add-cart">
+                  <ShoppingBag size={20} /> أضيفي إلى السلة
+                </button>
+                <button onClick={() => toggleWishlist(product.id)} className={`w-14 h-14 rounded-full flex items-center justify-center transition ${isWish ? "bg-pink-600 text-white" : "border-2 border-pink-200 text-pink-600 hover:bg-pink-50"}`} data-testid="detail-wishlist">
+                  <Heart size={20} fill={isWish ? "currentColor" : "none"} />
+                </button>
+              </div>
+            </>
+          )}
 
           <div className="border-t border-pink-100 pt-5 space-y-3 text-sm">
             <div className="flex items-center gap-2 text-gray-700"><Truck size={18} className="text-pink-600" /> توصيل لكافة محافظات العراق بـ 5,000 د.ع</div>
             <div className="flex items-center gap-2 text-gray-700"><ShieldCheck size={18} className="text-pink-600" /> منتج أصلي 100% مضمون</div>
-            <div className="flex items-center gap-2 text-gray-700"><MessageCircle size={18} className="text-pink-600" /> استشارة مجانية عبر واتساب</div>
+            {isFreeNoWhatsApp ? (
+              <div className="flex items-center gap-2 text-gray-700"><Sparkles size={18} className="text-pink-600" /> انسخي الوصف واستخدميه مجاناً</div>
+            ) : (
+              <div className="flex items-center gap-2 text-gray-700"><MessageCircle size={18} className="text-pink-600" /> استشارة مجانية عبر واتساب</div>
+            )}
           </div>
         </div>
       </div>
