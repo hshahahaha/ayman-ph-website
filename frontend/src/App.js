@@ -698,6 +698,7 @@ const Checkout = () => {
   const navigate = useNavigate();
   const [form, setForm] = useState({ name: "", phone: "", city: "", address: "", notes: "" });
   const [sent, setSent] = useState(false);
+  const isKidsVideoOnly = items.length > 0 && items.every((item) => item.id === "kids-video-design");
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -712,10 +713,10 @@ const Checkout = () => {
       "━━━━━━━━━━━━━━━",
       "",
       "👤 بيانات الزبونة",
-      `• الاسم: ${form.name}`,
-      `• الهاتف: ${form.phone}`,
-      `• المحافظة: ${form.city}`,
-      `• العنوان: ${form.address}`,
+      `• الاسم: ${form.name || "غير مذكور"}`,
+      `• الهاتف: ${form.phone || "غير مذكور"}`,
+      `• المحافظة: ${form.city || "غير مذكور"}`,
+      `• العنوان: ${form.address || "غير مذكور"}`,
       form.notes ? `• ملاحظات: ${form.notes}` : null,
       "",
       "━━━━━━━━━━━━━━━",
@@ -757,17 +758,20 @@ const Checkout = () => {
       <div className="grid lg:grid-cols-3 gap-8">
         <form onSubmit={handleSubmit} className="lg:col-span-2 bg-white rounded-3xl border border-pink-100 p-6 sm:p-8 space-y-5" data-testid="checkout-form">
           <h2 className="text-xl font-bold text-gray-800 mb-4">معلومات التوصيل</h2>
+          {isKidsVideoOnly && (
+            <p className="text-sm text-pink-600 bg-pink-50 rounded-xl p-3">طلب فيديو الأطفال لا يحتاج تعبئة البيانات؛ جميع الحقول أدناه اختيارية.</p>
+          )}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">الاسم الكامل *</label>
-            <input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="مثال: زينب أحمد" className="w-full border-2 border-pink-100 focus:border-pink-400 outline-none rounded-xl px-4 py-3" data-testid="checkout-name" />
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">الاسم الكامل {isKidsVideoOnly ? "(اختياري)" : "*"}</label>
+            <input required={!isKidsVideoOnly} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="مثال: زينب أحمد" className="w-full border-2 border-pink-100 focus:border-pink-400 outline-none rounded-xl px-4 py-3" data-testid="checkout-name" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">رقم الهاتف *</label>
-            <input required value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="07xxxxxxxxx" type="tel" className="w-full border-2 border-pink-100 focus:border-pink-400 outline-none rounded-xl px-4 py-3" data-testid="checkout-phone" />
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">رقم الهاتف {isKidsVideoOnly ? "(اختياري)" : "*"}</label>
+            <input required={!isKidsVideoOnly} value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="07xxxxxxxxx" type="tel" className="w-full border-2 border-pink-100 focus:border-pink-400 outline-none rounded-xl px-4 py-3" data-testid="checkout-phone" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">المحافظة *</label>
-            <select required value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} className="w-full border-2 border-pink-100 focus:border-pink-400 outline-none rounded-xl px-4 py-3 bg-white" data-testid="checkout-city">
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">المحافظة {isKidsVideoOnly ? "(اختياري)" : "*"}</label>
+            <select required={!isKidsVideoOnly} value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} className="w-full border-2 border-pink-100 focus:border-pink-400 outline-none rounded-xl px-4 py-3 bg-white" data-testid="checkout-city">
               <option value="">اختاري المحافظة</option>
               {["بغداد", "البصرة", "أربيل", "الموصل", "النجف", "كربلاء", "السليمانية", "كركوك", "بابل", "الأنبار", "ذي قار", "ديالى", "صلاح الدين", "ميسان", "واسط", "القادسية", "المثنى", "دهوك"].map((c) => (
                 <option key={c} value={c}>{c}</option>
@@ -775,8 +779,8 @@ const Checkout = () => {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">العنوان التفصيلي *</label>
-            <input required value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} placeholder="الحي، الشارع، أقرب نقطة دالة" className="w-full border-2 border-pink-100 focus:border-pink-400 outline-none rounded-xl px-4 py-3" data-testid="checkout-address" />
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">العنوان التفصيلي {isKidsVideoOnly ? "(اختياري)" : "*"}</label>
+            <input required={!isKidsVideoOnly} value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} placeholder="الحي، الشارع، أقرب نقطة دالة" className="w-full border-2 border-pink-100 focus:border-pink-400 outline-none rounded-xl px-4 py-3" data-testid="checkout-address" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">ملاحظات (اختياري)</label>
