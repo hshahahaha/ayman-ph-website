@@ -494,8 +494,8 @@ const Home = () => {
 
   return (
     <>
-      <ProductSection title="عرض حصري" emoji="💎" category="offers" viewAllLink="/collection/offers" />
       <ProductSection title="الأكثر طلباً" emoji="⭐" category="best-selling" viewAllLink="/collection/best-selling" />
+      <ProductSection title="عرض حصري" emoji="💎" category="offers" viewAllLink="/collection/offers" />
     </>
   );
 };
