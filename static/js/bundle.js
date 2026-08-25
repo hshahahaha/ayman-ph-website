@@ -43,7 +43,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const BACKEND_URL = ({"NODE_ENV":"development","PUBLIC_URL":"","WDS_SOCKET_HOST":undefined,"WDS_SOCKET_PATH":undefined,"WDS_SOCKET_PORT":undefined,"FAST_REFRESH":false}).REACT_APP_BACKEND_URL;
+const BACKEND_URL = ({"NODE_ENV":"development","PUBLIC_URL":"/ayman-ph-website","WDS_SOCKET_HOST":undefined,"WDS_SOCKET_PATH":undefined,"WDS_SOCKET_PORT":undefined,"FAST_REFRESH":false}).REACT_APP_BACKEND_URL;
 const API = "".concat(BACKEND_URL, "/api");
 const WHATSAPP_NUMBER = "9647832882348"; // 07832882348 with Iraq country code
 const DELIVERY_FEE = 5000; // د.ع - flat fee for all Iraqi governorates

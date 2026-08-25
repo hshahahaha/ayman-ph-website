@@ -1,8 +1,8 @@
 {
   "files": {
-    "main.js": "/static/js/bundle.js",
-    "index.html": "/index.html",
-    "bundle.js.map": "/static/js/bundle.js.map"
+    "main.js": "/ayman-ph-website/static/js/bundle.js",
+    "index.html": "/ayman-ph-website/index.html",
+    "bundle.js.map": "/ayman-ph-website/static/js/bundle.js.map"
   },
   "entrypoints": [
     "static/js/bundle.js"
