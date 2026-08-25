@@ -1,6 +1,7 @@
 import React, { useEffect, useState, createContext, useContext, useMemo } from "react";
 import { HashRouter, Routes, Route, Link, useParams, useNavigate, useLocation } from "react-router-dom";
 import axios from "./localAxios";
+import staticData from "./staticData.json";
 import { ShoppingBag, Heart, Search, Menu, X, ChevronLeft, Plus, Minus, Trash2, MessageCircle, Truck, ShieldCheck, Sparkles, Phone, MapPin, Instagram, Facebook } from "lucide-react";
 import "@/App.css";
 
@@ -392,7 +393,7 @@ const FeatureStrip = () => {
 
 // ============== PRODUCT SECTION ==============
 const ProductSection = ({ title, emoji, category, viewAllLink }) => {
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState(() => staticData.products.filter((product) => product.category === category).slice(0, 10));
   useEffect(() => {
     axios.get(`${API}/products?category=${category}&limit=10`).then((r) => setProducts(r.data)).catch(() => {});
   }, [category]);
@@ -420,7 +421,7 @@ const ProductSection = ({ title, emoji, category, viewAllLink }) => {
 
 // ============== CATEGORIES SECTION ==============
 const CategoriesSection = () => {
-  const [cats, setCats] = useState([]);
+  const [cats, setCats] = useState(staticData.categories);
   useEffect(() => {
     axios.get(`${API}/categories`).then((r) => setCats(r.data)).catch(() => {});
   }, []);
@@ -444,7 +445,7 @@ const CategoriesSection = () => {
 
 // ============== SKIN TYPES SECTION ==============
 const SkinTypesSection = () => {
-  const [types, setTypes] = useState([]);
+  const [types, setTypes] = useState(staticData.skinTypes);
   useEffect(() => {
     axios.get(`${API}/skin-types`).then((r) => setTypes(r.data)).catch(() => {});
   }, []);
@@ -469,7 +470,7 @@ const SkinTypesSection = () => {
 
 // ============== HOME ==============
 const Home = () => {
-  const [count, setCount] = useState(null);
+  const [count, setCount] = useState(staticData.products.length);
   useEffect(() => {
     axios.get(`${API}/products?limit=1`).then((r) => setCount(r.data.length)).catch(() => setCount(0));
   }, []);
